@@ -1,6 +1,7 @@
 package Operators;
 
 import Core._Chromosome;
+import Core._Gene;
 import OperatorsContracts.IMutator;
 
 import java.util.Random;
@@ -29,7 +30,32 @@ public class UniformMutation implements IMutator<Double> {
     public void mutate(_Chromosome<Double> chromosome) {
           /*TODO
               by Mohamed Ashraf
-        */
+
+              DONE
+          */
+
+        for (_Gene gene : chromosome.getGenes()) {
+            double r = random.nextDouble();
+            if (r > mutationRate)
+                continue;
+
+            double x = (double)gene.getValue();
+            double deltaLower = x - minValue;
+            double deltaUpper = maxValue - x;
+
+            double r1 = random.nextDouble();
+
+            if(r1 <= 0.5)
+            {
+                double r2 = random.nextDouble() * deltaLower;
+                gene.setValue(x - r2);
+            }
+            else
+            {
+                double r2 = random.nextDouble() * deltaUpper;
+                gene.setValue(x + r2);
+            }
+        }
     }
 
     @Override

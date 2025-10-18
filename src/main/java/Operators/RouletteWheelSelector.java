@@ -21,8 +21,38 @@ public class RouletteWheelSelector<T> implements ISelector<T> {
     public _Chromosome<T> select(_Population<T> population) {
         /*TODO
               by Mohamed Ashraf
+
+              DONE
         */
 
-         return null;
+        if(population.getChromosomes().isEmpty())
+            throw new IllegalArgumentException("Cannot select from empty population");
+
+        double totalFitness = population.getTotalFitness();
+
+        if(totalFitness == 0.0)
+        {
+            return population.getChromosomes().get(
+                    random.nextInt(population.getChromosomes().size())
+            );
+        }
+
+
+        double randomVal = random.nextDouble();
+        double cumulativePercentage = 0.0;
+
+        for (_Chromosome<T> chromosome : population.getChromosomes()) {
+
+            double chromosomePercentage = chromosome.getFitness() / totalFitness;
+            cumulativePercentage += chromosomePercentage;
+
+            if(randomVal <= cumulativePercentage)
+                return chromosome;
+
+        }
+
+        return population.getChromosomes().get(
+                population.getChromosomes().size() - 1
+        );
     }
 }

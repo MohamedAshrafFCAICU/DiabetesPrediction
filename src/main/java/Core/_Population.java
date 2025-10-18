@@ -21,6 +21,10 @@ public class _Population<T> {
         chromosomes.add(chromosome);
     }
 
+    public void addChromosomes(List<_Chromosome<T>> chromosomes) {
+        this.chromosomes.addAll(chromosomes);
+    }
+
     public _Chromosome<T> getChromosome(int index) {
         if (index < 0 || index >= chromosomes.size()) {
             throw new IndexOutOfBoundsException("Chromosome index out of bounds: " + index);
@@ -52,6 +56,15 @@ public class _Population<T> {
             throw new IllegalStateException("_Population is empty");
         }
         return Collections.min(chromosomes);
+    }
+
+    public double getTotalFitness() {
+        if (chromosomes.isEmpty()) {
+            return 0.0;
+        }
+        return chromosomes.stream()
+                .mapToDouble(_Chromosome::getFitness)
+                .sum();
     }
 
     public double getAverageFitness() {
