@@ -2,7 +2,7 @@ package Problems;
 
 public class DiabetesPatient {
     private final double[] features;
-    private final int label; // 0 = No diabetes, 1 = Has diabetes
+    private final int label;
 
     public DiabetesPatient(double[] features, int label) {
         this.features = features.clone();
