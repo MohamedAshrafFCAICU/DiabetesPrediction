@@ -10,7 +10,6 @@ public class GenerationalReplacement<T> implements IReplacementStrategy<T> {
           /*TODO
               by Ahmed Kamel
           */
-
-        return  null;
+        return offspring;
     }
 }

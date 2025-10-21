@@ -1,6 +1,7 @@
 package Operators;
 
 import Core._Chromosome;
+import Core._Gene;
 import OperatorsContracts.IMutator;
 
 import java.util.Random;
@@ -24,6 +25,16 @@ public class BitFlipMutation implements IMutator<Boolean> {
           /*TODO
               by Ahmed Kamel
         */
+
+        for (int i = 0; i < chromosome.getLength(); i++) {
+            if (random.nextDouble() < mutationRate) {
+                _Gene<Boolean> gene = chromosome.getGene(i);
+                Boolean currentValue = gene.getValue();
+                gene.setValue(!currentValue);
+                chromosome.setGene(i, gene);
+            }
+        }
+
     }
 
     @Override
