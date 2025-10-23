@@ -663,7 +663,7 @@ Fitness
 
 ## 👥 Contributors
 
-This project is developed by **Group 7** (Mansoura University - Faculty of Engineering):
+This project is developed by **SWE Team** (Cairo University - Faculty of Computers & AI):
 
 | Name               | Role                    | Contributions                                                                  | GitHub |
 |--------------------|-------------------------|--------------------------------------------------------------------------------|--------|
