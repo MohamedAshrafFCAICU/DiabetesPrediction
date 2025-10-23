@@ -4,11 +4,13 @@ import Core._Chromosome;
 import Core._Gene;
 import OperatorsContracts.IMutator;
 import Validation.IChromosomeValidator;
-import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
 import java.util.*;
 
-
+/**
+ * Integer Mutation with Duplicate Prevention
+ * Replaces a gene with an unused value
+ */
 public class IntegerMutation implements IMutator<Integer> {
     private double mutationRate;
     private final Random random;
@@ -25,34 +27,75 @@ public class IntegerMutation implements IMutator<Integer> {
         this.random = new Random();
     }
 
-        @Override
-        public void mutate(_Chromosome<Integer> chromosome) {
+    @Override
+    public void mutate(_Chromosome<Integer> chromosome) {
+        if (chromosome == null) {
+            throw new IllegalArgumentException("Chromosome cannot be null");
+        }
 
-            if(chromosome == null){
-                throw new IllegalArgumentException("Chromosome cannot be null");
-            }
+        boolean mutated = false;
 
-            for (int i=0; i<chromosome.getLength();i++){
-                if(random.nextDouble() < mutationRate){
-                    _Gene<Integer> gene = chromosome.getGene(i);
-                    int newValue;
-                    do{
-                        newValue = random.nextInt(maxValue - minValue) + minValue;
-                    } while (chromosome.getLength() > 1 && newValue == gene.getValue());
-                    gene.setValue(newValue);
-                    chromosome.invalidateFitness();
+        for (int i = 0; i < chromosome.getLength(); i++) {
+            if (random.nextDouble() < mutationRate) {
+                // ✅ Get currently used values
+                Set<Integer> usedValues = getCurrentValues(chromosome);
+
+                // ✅ Find available values
+                List<Integer> availableValues = new ArrayList<>();
+                for (int val = minValue; val < maxValue; val++) {
+                    if (!usedValues.contains(val)) {
+                        availableValues.add(val);
+                    }
                 }
-            }
-            if(validator!=null && !validator.isValid(chromosome)){
-                boolean repair = validator.repair(chromosome);
-                if(!repair && !validator.isValid(chromosome)){
-                    throw new IllegalStateException("Chromosome is invalid and could not be repaired!");
+
+                // ✅ Only mutate if there are available values
+                if (!availableValues.isEmpty()) {
+                    _Gene<Integer> gene = chromosome.getGene(i);
+
+                    // Remove current value from used set
+                    usedValues.remove(gene.getValue());
+
+                    // Select random available value
+                    int newValue = availableValues.get(random.nextInt(availableValues.size()));
+                    gene.setValue(newValue);
+
+                    mutated = true;
                 }
             }
         }
 
+        if (mutated) {
+            chromosome.invalidateFitness();
+        }
+
+        // ✅ Validate and repair
+        if (validator != null && !validator.isValid(chromosome)) {
+            boolean repaired = validator.repair(chromosome);
+            if (!repaired && !validator.isValid(chromosome)) {
+                throw new IllegalStateException(
+                        "Chromosome is invalid and could not be repaired: " +
+                                validator.validate(chromosome)
+                );
+            }
+        }
+    }
+
+    /**
+     * Get all values currently in the chromosome
+     */
+    private Set<Integer> getCurrentValues(_Chromosome<Integer> chromosome) {
+        Set<Integer> values = new HashSet<>();
+        for (int i = 0; i < chromosome.getLength(); i++) {
+            values.add(chromosome.getGene(i).getValue());
+        }
+        return values;
+    }
+
     @Override
     public void setMutationRate(double rate) {
+        if (rate < 0 || rate > 1) {
+            throw new IllegalArgumentException("Mutation rate must be between 0 and 1");
+        }
         this.mutationRate = rate;
     }
 
